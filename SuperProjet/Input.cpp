@@ -127,7 +127,7 @@ IaBossFoxInput::IaBossFoxInput(IGameObject& object) : m_actioncout(0), m_velocit
 
 void IaBossFoxInput::processinput(sf::Event& event)
 {
-	auto& objectenemie = dynamic_cast<Boss::BossFoxTentacle&>(m_object);
+	auto& objectenemie = dynamic_cast<BossFoxTentacle&>(m_object);
 	auto& m_ennemie = objectenemie.m_bossfox;
 	objectenemie.m_elapsedTime = objectenemie.m_clock.getElapsedTime();
 	auto windowsize = objectenemie.m_game.getWindowSize();
@@ -194,7 +194,7 @@ void IaBossCarrotInput::processinput(sf::Event& event)
 {
 
 
-	auto& objectenemie = dynamic_cast<Boss::BossCarrot&>(m_object);
+	auto& objectenemie = dynamic_cast<BossCarrot&>(m_object);
 	auto& m_ennemie = objectenemie.m_bossCarrot;
 	objectenemie.m_elapsedTime = objectenemie.m_clock.getElapsedTime();
 
@@ -235,7 +235,7 @@ IaBossLuminuxInput::IaBossLuminuxInput(IGameObject& object) : m_actioncout(0), m
 
 void IaBossLuminuxInput::processinput(sf::Event& event)
 {
-	auto& objectenemie = dynamic_cast<Boss::BossLuminux&>(m_object);
+	auto& objectenemie = dynamic_cast<BossLuminux&>(m_object);
 	auto& m_ennemie = objectenemie.m_bossluinux;
 	objectenemie.m_elapsedTime = objectenemie.m_clock.getElapsedTime();
 	auto windowsize = objectenemie.m_game.getWindowSize();

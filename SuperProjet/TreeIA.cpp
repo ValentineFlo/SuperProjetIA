@@ -25,17 +25,3 @@ namespace BT
     }
 }
 
-void Game::findValidTarget()
-{
-    for (auto& enemy : m_bosses)
-    {
-        if (enemy->getVie() > 0)
-        {
-            currentboss = enemy;
-            return;
-        }
-    }
-
-    currentboss = nullptr;
-}
-

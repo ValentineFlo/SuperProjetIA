@@ -1,6 +1,7 @@
 #pragma once
 #include "IGameObject.h"
 #include "Game.h"
+#include <array>
 
 #include<vector>
 class Iinput;
@@ -9,6 +10,12 @@ class IaInput;
 class IaBossFoxInput;
 class IaBossCarrotInput;
 class IaBossLuminuxInput;
+
+namespace
+{
+    int NPC_MAX_AMMO() { return 5; }
+}
+
 class spetialfire
 {
 public:
@@ -96,9 +103,6 @@ public:
     AABB GetBoundingBox() override;
     void TakeDomage(int num = 1, int score = 0);
 private:
-
-
-
 
     float m_angle;
     sf::RectangleShape m_missile;
@@ -194,178 +198,229 @@ protected:
     Vec2& m_Size;
 };
 
-class Boss
+class Boss : public IGameObject
 {
 public:
 
-    class BossFoxTentacle : public IGameObject
+    Boss(Game& game) : IGameObject(game), m_game(game), m_currentTarget(nullptr), m_ammo(NPC_MAX_AMMO()), m_bosses()
     {
-    public:
-        friend IaBossFoxInput;
-        BossFoxTentacle(SceneBase& game, sf::CircleShape& circle);
-        ~BossFoxTentacle();
-        void setennemie();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        void resetmooveposition();
-        void deltapositin();
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
-
-
-    private:
+    }
 
 
 
-        sf::Vector2f m_delta;
-        sf::CircleShape m_bossfox;
-        sf::Vector2f m_moove;
-        float m_angle;
-        Iinput* m_input;
-        sf::CircleShape& m_ship;
-        bool m_fire;
-        const float m_firerate;
-        sf::Clock m_clock;
-        sf::Time m_elapsedTime;
-    };
-    class FoxMissille : public IGameObject
+    IGameObject* getCurrentTarget()
     {
-    public:
-        FoxMissille(SceneBase& game, sf::CircleShape& circle, float angmle);
-        void set();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
-    private:
+        return m_currentTarget;
+    }
 
-
-
-
-        float& m_angle;
-        sf::RectangleShape m_fishmissile;
-        sf::Vector2f m_moove;
-        float m_velocity;
-        sf::CircleShape& m_shape;
-
-    };
-    class BossCarrot : public IGameObject
+    bool isCurrentTargetValid() const
     {
-    public:
-        friend IaBossCarrotInput;
-        BossCarrot(SceneBase& game, sf::CircleShape& circle);
-        ~BossCarrot();
-        void setennemie();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        void resetmooveposition();
-        void deltapositin();
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
+        if (m_currentTarget == nullptr)
+            return false;
 
+        if (m_currentTarget->getVie() <= 0)
+            return false;
 
-    private:
+        return true;
+    }
 
-        sf::Vector2f m_delta;
-        sf::RectangleShape m_bossCarrot;
-        sf::Vector2f m_moove;
-        float m_angle;
-        int m_action;
-        Iinput* m_input;
-        sf::CircleShape& m_ship;
-        bool m_fire;
-        const float m_firerate;
-        sf::Clock m_clock;
-        sf::Time m_elapsedTime;
-
-        IGameObject* m_currentTarget;
-        Game& m_game;
-        int m_ammo;
-    };
-    class CarrotMissile : public IGameObject
+    bool isClipEmpty() const
     {
-    public:
-        CarrotMissile(SceneBase& game, sf::RectangleShape& rectangle, float angmle);
-        void set();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
-    private:
+        return m_ammo <= 0;
+    }
 
-
-
-
-        float& m_angle;
-        sf::RectangleShape m_carottemissile;
-        sf::Vector2f m_moove;
-        float m_velocity;
-        sf::RectangleShape& m_shape;
-
-    };
-    class BossLuminux : public IGameObject
+    void reloadGun()
     {
-    public:
-        friend IaBossLuminuxInput;
-        BossLuminux(SceneBase& game, sf::CircleShape& circle);
-        ~BossLuminux();
-        void setennemie();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        void resetmooveposition();
-        void deltapositin();
-        void anglecalcul();
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
+        m_ammo = NPC_MAX_AMMO();
+    }
 
-
-    private:
-
-
-
-        sf::Vector2f m_delta;
-        sf::CircleShape m_bossluinux;
-        sf::Vector2f m_moove;
-        float m_angle;
-        Iinput* m_input;
-        sf::CircleShape& m_ship;
-        bool m_fire;
-        const float m_firerate;
-        sf::Clock m_clock;
-        sf::Time m_elapsedTime;
-    };
-    class LuminuxMissile : public IGameObject
+    void findValidTarget()
     {
-    public:
-        LuminuxMissile(SceneBase& game, sf::CircleShape& circle, float angmle);
-        void set();
-        void input(sf::Event event) override;
-        void update(float deltatime)override;
-        void render() override;
-        int& gettype() override;
-        AABB GetBoundingBox() override;
-        void TakeDomage(int num = 1, int score = 0);
-    private:
+        for (auto& enemy : m_bosses)
+        {
+            if (enemy->getVie() > 0)
+            {
+                m_currentTarget = enemy;
+                return;
+            }
+        }
+
+        m_currentTarget = nullptr;
+    }
+
+private:
+    IGameObject* m_currentTarget;
+    Game& m_game;
+    int m_ammo;
+    std::array<Boss*, 4>  m_bosses = { nullptr };
+
+};
+
+
+class BossFoxTentacle : public IGameObject
+{
+public:
+    friend IaBossFoxInput;
+    BossFoxTentacle(SceneBase& game, sf::CircleShape& circle);
+    ~BossFoxTentacle();
+    void setennemie();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    void resetmooveposition();
+    void deltapositin();
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+
+
+private:
+
+
+
+    sf::Vector2f m_delta;
+    sf::CircleShape m_bossfox;
+    sf::Vector2f m_moove;
+    float m_angle;
+    Iinput* m_input;
+    sf::CircleShape& m_ship;
+    bool m_fire;
+    const float m_firerate;
+    sf::Clock m_clock;
+    sf::Time m_elapsedTime;
+};
+class FoxMissille : public IGameObject
+{
+public:
+    FoxMissille(SceneBase& game, sf::CircleShape& circle, float angmle);
+    void set();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+private:
 
 
 
 
-        float& m_angle;
-        sf::RectangleShape m_luminuxmissile;
-        sf::Vector2f m_moove;
-        float m_velocity;
-        sf::CircleShape& m_shape;
+    float& m_angle;
+    sf::RectangleShape m_fishmissile;
+    sf::Vector2f m_moove;
+    float m_velocity;
+    sf::CircleShape& m_shape;
 
-    };
+};
+class BossCarrot : public IGameObject
+{
+public:
+    friend IaBossCarrotInput;
+    BossCarrot(SceneBase& game, sf::CircleShape& circle);
+    ~BossCarrot();
+    void setennemie();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    void resetmooveposition();
+    void deltapositin();
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+
+
+private:
+
+    sf::Vector2f m_delta;
+    sf::RectangleShape m_bossCarrot;
+    sf::Vector2f m_moove;
+    float m_angle;
+    int m_action;
+    Iinput* m_input;
+    sf::CircleShape& m_ship;
+    bool m_fire;
+    const float m_firerate;
+    sf::Clock m_clock;
+    sf::Time m_elapsedTime;
+
+    IGameObject* m_currentTarget;
+};
+class CarrotMissile : public IGameObject
+{
+public:
+    CarrotMissile(SceneBase& game, sf::RectangleShape& rectangle, float angmle);
+    void set();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+private:
+
+
+
+
+    float& m_angle;
+    sf::RectangleShape m_carottemissile;
+    sf::Vector2f m_moove;
+    float m_velocity;
+    sf::RectangleShape& m_shape;
+
+};
+class BossLuminux : public IGameObject
+{
+public:
+    friend IaBossLuminuxInput;
+    BossLuminux(SceneBase& game, sf::CircleShape& circle);
+    ~BossLuminux();
+    void setennemie();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    void resetmooveposition();
+    void deltapositin();
+    void anglecalcul();
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+
+
+private:
+
+
+
+    sf::Vector2f m_delta;
+    sf::CircleShape m_bossluinux;
+    sf::Vector2f m_moove;
+    float m_angle;
+    Iinput* m_input;
+    sf::CircleShape& m_ship;
+    bool m_fire;
+    const float m_firerate;
+    sf::Clock m_clock;
+    sf::Time m_elapsedTime;
+};
+class LuminuxMissile : public IGameObject
+{
+public:
+    LuminuxMissile(SceneBase& game, sf::CircleShape& circle, float angmle);
+    void set();
+    void input(sf::Event event) override;
+    void update(float deltatime)override;
+    void render() override;
+    int& gettype() override;
+    AABB GetBoundingBox() override;
+    void TakeDomage(int num = 1, int score = 0);
+private:
+
+
+
+
+    float& m_angle;
+    sf::RectangleShape m_luminuxmissile;
+    sf::Vector2f m_moove;
+    float m_velocity;
+    sf::CircleShape& m_shape;
 
 };

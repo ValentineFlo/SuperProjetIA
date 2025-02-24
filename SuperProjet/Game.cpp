@@ -203,15 +203,15 @@ void Game::bossspawn()
 	switch (rand)
 	{
 	case 0:
-		currentboss = new Boss::BossLuminux(*this, m_player->getcircle());
+		currentboss = new BossLuminux(*this, m_player->getcircle());
 		m_bossevent = true;
 		break;
 	case 1:
-		currentboss = new Boss::BossFoxTentacle(*this, m_player->getcircle());
+		currentboss = new BossFoxTentacle(*this, m_player->getcircle());
 		m_bossevent = true;
 		break;
 	case 2:
-		currentboss = new Boss::BossCarrot(*this, m_player->getcircle());
+		currentboss = new BossCarrot(*this, m_player->getcircle());
 		m_bossevent = true;
 		break;
 	default:

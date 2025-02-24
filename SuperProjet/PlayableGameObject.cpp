@@ -2,10 +2,6 @@
 #include "Input.h"
 #include <cmath>
 
-namespace
-{
-	int NPC_MAX_AMMO() { return 5; }
-}
 
 void spetialfire::RoundShoot(int numofmissille, SceneBase& game, sf::CircleShape& circle, int type)
 {
@@ -14,9 +10,9 @@ void spetialfire::RoundShoot(int numofmissille, SceneBase& game, sf::CircleShape
 	for (auto idx = 0; idx < numofmissille; ++idx)
 	{
 		if (type == Type_FoxMissille)
-			new Boss::FoxMissille(game, circle, start_angle);
+			new FoxMissille(game, circle, start_angle);
 		if (type == Type_LuminuxMissile)
-			new Boss::LuminuxMissile(game, circle, start_angle);
+			new LuminuxMissile(game, circle, start_angle);
 		start_angle += angle_of_missile;
 	}
 }
@@ -27,7 +23,7 @@ void spetialfire::RoundShoot(int numofmissille, SceneBase& game, sf::RectangleSh
 	for (auto idx = 0; idx < numofmissille; ++idx)
 	{
 		if (type == Type_CarroteMissile)
-			new Boss::CarrotMissile(game, rectangle, start_angle);
+			new CarrotMissile(game, rectangle, start_angle);
 
 		start_angle += angle_of_missile;
 	}
@@ -40,9 +36,9 @@ void spetialfire::ConeShoot(int angle, int numofmissille, SceneBase& game, sf::C
 	for (auto idx = 0; idx < numofmissille; ++idx)
 	{
 		if (type == Type_FoxMissille)
-			new Boss::FoxMissille(game, circle, start_angle);
+			new FoxMissille(game, circle, start_angle);
 		if (type == Type_LuminuxMissile)
-			new Boss::LuminuxMissile(game, circle, start_angle);
+			new LuminuxMissile(game, circle, start_angle);
 		start_angle += angle_of_missile;
 	}
 
@@ -54,7 +50,7 @@ void spetialfire::ConeShoot(int angle, int numofmissille, SceneBase& game, sf::R
 	for (auto idx = 0; idx < numofmissille; ++idx)
 	{
 		if (type == Type_CarroteMissile)
-			new Boss::CarrotMissile(game, rectangle, start_angle);
+			new CarrotMissile(game, rectangle, start_angle);
 
 		start_angle += angle_of_missile;
 	}
@@ -681,7 +677,7 @@ void Lives::TakeDomage(int num, int score)
 		m_vie = 0;
 
 }
-Boss::BossFoxTentacle::BossFoxTentacle(SceneBase& game, sf::CircleShape& circle) :
+BossFoxTentacle::BossFoxTentacle(SceneBase& game, sf::CircleShape& circle) :
 	IGameObject(game)
 	, m_bossfox(300)
 	, m_ship(circle)
@@ -697,13 +693,13 @@ Boss::BossFoxTentacle::BossFoxTentacle(SceneBase& game, sf::CircleShape& circle)
 	setennemie();
 }
 
-Boss::BossFoxTentacle::~BossFoxTentacle()
+BossFoxTentacle::~BossFoxTentacle()
 {
 	delete m_input;
 	delete m_randPosition;
 }
 
-void Boss::BossFoxTentacle::setennemie()
+void BossFoxTentacle::setennemie()
 {
 	//set RandomSpawn
 	m_randPosition = new RandomSpawn(Vec2{ -m_bossfox.getRadius(),-m_bossfox.getRadius() },
@@ -718,7 +714,7 @@ void Boss::BossFoxTentacle::setennemie()
 	m_input = new IaBossFoxInput(*this);
 
 }
-AABB Boss::BossFoxTentacle::GetBoundingBox()
+AABB BossFoxTentacle::GetBoundingBox()
 {
 	Amin.x = m_bossfox.getPosition().x - m_bossfox.getRadius();
 	Amin.y = m_bossfox.getPosition().y - m_bossfox.getRadius();
@@ -729,7 +725,7 @@ AABB Boss::BossFoxTentacle::GetBoundingBox()
 	AABB boundingbox(Amin, Amax);
 	return boundingbox;
 }
-void Boss::BossFoxTentacle::TakeDomage(int num, int score)
+void BossFoxTentacle::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)
@@ -740,25 +736,25 @@ void Boss::BossFoxTentacle::TakeDomage(int num, int score)
 	}
 	m_takedomage.restart();
 }
-void Boss::BossFoxTentacle::resetmooveposition()
+void BossFoxTentacle::resetmooveposition()
 {
 	m_moove.x = 0;
 	m_moove.y = 0;
 }
-void Boss::BossFoxTentacle::deltapositin()
+void BossFoxTentacle::deltapositin()
 {
 	m_delta.x = m_ship.getPosition().x - m_bossfox.getPosition().x;
 	m_delta.y = m_ship.getPosition().y - m_bossfox.getPosition().y;
 }
 
 
-void Boss::BossFoxTentacle::input(sf::Event event)
+void BossFoxTentacle::input(sf::Event event)
 {
 	resetmooveposition();
 	m_input->processinput(event);
 }
 
-void Boss::BossFoxTentacle::update(float deltatime)
+void BossFoxTentacle::update(float deltatime)
 {
 	deltapositin();
 	m_bossfox.move(m_moove.x, m_moove.y);
@@ -775,18 +771,18 @@ void Boss::BossFoxTentacle::update(float deltatime)
 	}
 }
 
-void Boss::BossFoxTentacle::render()
+void BossFoxTentacle::render()
 {
 	m_game.getWindow()->draw(m_bossfox);
 
 
 }
 
-int& Boss::BossFoxTentacle::gettype()
+int& BossFoxTentacle::gettype()
 {
 	return m_type;
 }
-Boss::FoxMissille::FoxMissille(SceneBase& game, sf::CircleShape& circle, float angle) :
+FoxMissille::FoxMissille(SceneBase& game, sf::CircleShape& circle, float angle) :
 	IGameObject(game)
 	, m_fishmissile(sf::Vector2f(75, 15))
 	, m_shape(circle)
@@ -797,7 +793,7 @@ Boss::FoxMissille::FoxMissille(SceneBase& game, sf::CircleShape& circle, float a
 	set();
 }
 
-void Boss::FoxMissille::set()
+void FoxMissille::set()
 {
 	//set texture
 
@@ -817,11 +813,11 @@ void Boss::FoxMissille::set()
 
 }
 
-void Boss::FoxMissille::input(sf::Event event)
+void FoxMissille::input(sf::Event event)
 {
 }
 
-void Boss::FoxMissille::update(float deltatime)
+void FoxMissille::update(float deltatime)
 {
 	m_fishmissile.move(m_moove.x, m_moove.y);
 	if (m_vie <= 0)
@@ -831,18 +827,18 @@ void Boss::FoxMissille::update(float deltatime)
 	}
 }
 
-void Boss::FoxMissille::render()
+void FoxMissille::render()
 {
 	m_game.getWindow()->draw(m_fishmissile);
 
 }
 
-int& Boss::FoxMissille::gettype()
+int& FoxMissille::gettype()
 {
 	return m_type;
 }
 
-AABB Boss::FoxMissille::GetBoundingBox()
+AABB FoxMissille::GetBoundingBox()
 {
 	Amin.x = m_fishmissile.getPosition().x - m_fishmissile.getSize().x / 2;
 	Amin.y = m_fishmissile.getPosition().y - m_fishmissile.getSize().y / 2;
@@ -854,7 +850,7 @@ AABB Boss::FoxMissille::GetBoundingBox()
 	return boundingbox;
 }
 
-void Boss::FoxMissille::TakeDomage(int num, int score)
+void FoxMissille::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)
@@ -867,7 +863,7 @@ void Boss::FoxMissille::TakeDomage(int num, int score)
 }
 
 
-Boss::BossCarrot::BossCarrot(SceneBase& game, sf::CircleShape& circle) :
+BossCarrot::BossCarrot(SceneBase& game, sf::CircleShape& circle) :
 	IGameObject(game)
 	, m_bossCarrot(sf::Vector2f(600, 200))
 	, m_ship(circle)
@@ -884,13 +880,13 @@ Boss::BossCarrot::BossCarrot(SceneBase& game, sf::CircleShape& circle) :
 	setennemie();
 }
 
-Boss::BossCarrot::~BossCarrot()
+BossCarrot::~BossCarrot()
 {
 	delete m_input;
 	delete m_randPosition;
 }
 
-void Boss::BossCarrot::setennemie()
+void BossCarrot::setennemie()
 {
 	//set RandomSpawn
 
@@ -908,7 +904,7 @@ void Boss::BossCarrot::setennemie()
 
 
 }
-AABB Boss::BossCarrot::GetBoundingBox()
+AABB BossCarrot::GetBoundingBox()
 {
 	Amin.x = m_bossCarrot.getPosition().x - m_bossCarrot.getSize().x / 2;
 	Amin.y = m_bossCarrot.getPosition().y - m_bossCarrot.getSize().y / 2;
@@ -919,7 +915,7 @@ AABB Boss::BossCarrot::GetBoundingBox()
 	AABB boundingbox(Amin, Amax);
 	return boundingbox;
 }
-void Boss::BossCarrot::TakeDomage(int num, int score)
+void BossCarrot::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)
@@ -930,25 +926,25 @@ void Boss::BossCarrot::TakeDomage(int num, int score)
 	}
 	m_takedomage.restart();
 }
-void Boss::BossCarrot::resetmooveposition()
+void BossCarrot::resetmooveposition()
 {
 	m_moove.x = 0;
 	m_moove.y = 0;
 }
-void Boss::BossCarrot::deltapositin()
+void BossCarrot::deltapositin()
 {
 	m_delta.x = m_ship.getPosition().x - m_bossCarrot.getPosition().x;
 	m_delta.y = m_ship.getPosition().y - m_bossCarrot.getPosition().y;
 }
 
 
-void Boss::BossCarrot::input(sf::Event event)
+void BossCarrot::input(sf::Event event)
 {
 	resetmooveposition();
 	m_input->processinput(event);
 }
 
-void Boss::BossCarrot::update(float deltatime)
+void BossCarrot::update(float deltatime)
 {
 	deltapositin();
 
@@ -969,18 +965,18 @@ void Boss::BossCarrot::update(float deltatime)
 	}
 }
 
-void Boss::BossCarrot::render()
+void BossCarrot::render()
 {
 	m_game.getWindow()->draw(m_bossCarrot);
 
 
 }
 
-int& Boss::BossCarrot::gettype()
+int& BossCarrot::gettype()
 {
 	return m_type;
 }
-Boss::CarrotMissile::CarrotMissile(SceneBase& game, sf::RectangleShape& rectangle, float angle) :
+CarrotMissile::CarrotMissile(SceneBase& game, sf::RectangleShape& rectangle, float angle) :
 	IGameObject(game)
 	, m_carottemissile(sf::Vector2f(75, 15))
 	, m_shape(rectangle)
@@ -991,7 +987,7 @@ Boss::CarrotMissile::CarrotMissile(SceneBase& game, sf::RectangleShape& rectangl
 	set();
 }
 
-void Boss::CarrotMissile::set()
+void CarrotMissile::set()
 {
 	//set texture
 
@@ -1011,11 +1007,11 @@ void Boss::CarrotMissile::set()
 
 }
 
-void Boss::CarrotMissile::input(sf::Event event)
+void CarrotMissile::input(sf::Event event)
 {
 }
 
-void Boss::CarrotMissile::update(float deltatime)
+void CarrotMissile::update(float deltatime)
 {
 	m_carottemissile.move(m_moove.x, m_moove.y);
 	if (m_vie <= 0)
@@ -1025,18 +1021,18 @@ void Boss::CarrotMissile::update(float deltatime)
 	}
 }
 
-void Boss::CarrotMissile::render()
+void CarrotMissile::render()
 {
 	m_game.getWindow()->draw(m_carottemissile);
 
 }
 
-int& Boss::CarrotMissile::gettype()
+int& CarrotMissile::gettype()
 {
 	return m_type;
 }
 
-AABB Boss::CarrotMissile::GetBoundingBox()
+AABB CarrotMissile::GetBoundingBox()
 {
 	Amin.x = m_carottemissile.getPosition().x - m_carottemissile.getSize().x / 2;
 	Amin.y = m_carottemissile.getPosition().y - m_carottemissile.getSize().y / 2;
@@ -1048,7 +1044,7 @@ AABB Boss::CarrotMissile::GetBoundingBox()
 	return boundingbox;
 }
 
-void Boss::CarrotMissile::TakeDomage(int num, int score)
+void CarrotMissile::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)
@@ -1059,7 +1055,7 @@ void Boss::CarrotMissile::TakeDomage(int num, int score)
 	}
 	m_takedomage.restart();
 }
-Boss::BossLuminux::BossLuminux(SceneBase& game, sf::CircleShape& circle) :
+BossLuminux::BossLuminux(SceneBase& game, sf::CircleShape& circle) :
 	IGameObject(game)
 	, m_bossluinux(300)
 	, m_ship(circle)
@@ -1075,13 +1071,13 @@ Boss::BossLuminux::BossLuminux(SceneBase& game, sf::CircleShape& circle) :
 	setennemie();
 }
 
-Boss::BossLuminux::~BossLuminux()
+BossLuminux::~BossLuminux()
 {
 	delete m_input;
 	delete m_randPosition;
 }
 
-void Boss::BossLuminux::setennemie()
+void BossLuminux::setennemie()
 {
 	//set RandomSpawn
 	m_randPosition = new RandomSpawn(Vec2{ -m_bossluinux.getRadius(),-m_bossluinux.getRadius() },
@@ -1096,7 +1092,7 @@ void Boss::BossLuminux::setennemie()
 	m_input = new IaBossLuminuxInput(*this);
 
 }
-AABB Boss::BossLuminux::GetBoundingBox()
+AABB BossLuminux::GetBoundingBox()
 {
 	Amin.x = m_bossluinux.getPosition().x - m_bossluinux.getRadius();
 	Amin.y = m_bossluinux.getPosition().y - m_bossluinux.getRadius();
@@ -1107,7 +1103,7 @@ AABB Boss::BossLuminux::GetBoundingBox()
 	AABB boundingbox(Amin, Amax);
 	return boundingbox;
 }
-void Boss::BossLuminux::TakeDomage(int num, int score)
+void BossLuminux::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)
@@ -1118,31 +1114,31 @@ void Boss::BossLuminux::TakeDomage(int num, int score)
 	}
 	m_takedomage.restart();
 }
-void Boss::BossLuminux::resetmooveposition()
+void BossLuminux::resetmooveposition()
 {
 	m_moove.x = 0;
 	m_moove.y = 0;
 }
-void Boss::BossLuminux::deltapositin()
+void BossLuminux::deltapositin()
 {
 	m_delta.x = m_ship.getPosition().x - m_bossluinux.getPosition().x;
 	m_delta.y = m_ship.getPosition().y - m_bossluinux.getPosition().y;
 }
 
-void Boss::BossLuminux::anglecalcul()
+void BossLuminux::anglecalcul()
 {
 	float angle = atan2(m_delta.y, m_delta.x);
 	m_angle = angle * 180.0f / 3.1415926f;
 }
 
 
-void Boss::BossLuminux::input(sf::Event event)
+void BossLuminux::input(sf::Event event)
 {
 	resetmooveposition();
 	m_input->processinput(event);
 }
 
-void Boss::BossLuminux::update(float deltatime)
+void BossLuminux::update(float deltatime)
 {
 	deltapositin();
 	anglecalcul();
@@ -1164,18 +1160,18 @@ void Boss::BossLuminux::update(float deltatime)
 	}
 }
 
-void Boss::BossLuminux::render()
+void BossLuminux::render()
 {
 	m_game.getWindow()->draw(m_bossluinux);
 
 
 }
 
-int& Boss::BossLuminux::gettype()
+int& BossLuminux::gettype()
 {
 	return m_type;
 }
-Boss::LuminuxMissile::LuminuxMissile(SceneBase& game, sf::CircleShape& circle, float angle) :
+LuminuxMissile::LuminuxMissile(SceneBase& game, sf::CircleShape& circle, float angle) :
 	IGameObject(game)
 	, m_luminuxmissile(sf::Vector2f(75, 15))
 	, m_shape(circle)
@@ -1186,7 +1182,7 @@ Boss::LuminuxMissile::LuminuxMissile(SceneBase& game, sf::CircleShape& circle, f
 	set();
 }
 
-void Boss::LuminuxMissile::set()
+void LuminuxMissile::set()
 {
 	//set texture
 	if (m_rand->getrandomnumber(0, 1) == 0)
@@ -1209,11 +1205,11 @@ void Boss::LuminuxMissile::set()
 
 }
 
-void Boss::LuminuxMissile::input(sf::Event event)
+void LuminuxMissile::input(sf::Event event)
 {
 }
 
-void Boss::LuminuxMissile::update(float deltatime)
+void LuminuxMissile::update(float deltatime)
 {
 	m_luminuxmissile.move(m_moove.x, m_moove.y);
 	if (m_vie <= 0)
@@ -1223,18 +1219,18 @@ void Boss::LuminuxMissile::update(float deltatime)
 	}
 }
 
-void Boss::LuminuxMissile::render()
+void LuminuxMissile::render()
 {
 	m_game.getWindow()->draw(m_luminuxmissile);
 
 }
 
-int& Boss::LuminuxMissile::gettype()
+int& LuminuxMissile::gettype()
 {
 	return m_type;
 }
 
-AABB Boss::LuminuxMissile::GetBoundingBox()
+AABB LuminuxMissile::GetBoundingBox()
 {
 	Amin.x = m_luminuxmissile.getPosition().x - m_luminuxmissile.getSize().x / 2;
 	Amin.y = m_luminuxmissile.getPosition().y - m_luminuxmissile.getSize().y / 2;
@@ -1246,7 +1242,7 @@ AABB Boss::LuminuxMissile::GetBoundingBox()
 	return boundingbox;
 }
 
-void Boss::LuminuxMissile::TakeDomage(int num, int score)
+void LuminuxMissile::TakeDomage(int num, int score)
 {
 	m_timetotakedomage = m_takedomage.getElapsedTime();
 	if (m_timetotakedomage.asSeconds() > 0.05)

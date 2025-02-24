@@ -2,56 +2,10 @@
 
 #include <iostream>
 #include <vector>
-#include <array>
 #include <type_traits>
 #include "PlayableGameObject.h"
 
 class Game;
-
-namespace 
-{
-    int NPC_MAX_AMMO() { return 5; }
-}
-
-struct boss
-{
-    boss(Game& game) : m_game(game), m_currentTarget(nullptr), m_ammo(NPC_MAX_AMMO())
-    {
-    }
-
-    
-
-    IGameObject* getCurrentTarget()
-    {
-        return m_currentTarget;
-    }
-
-    bool isCurrentTargetValid() const
-    {
-        if (m_currentTarget == nullptr)
-            return false;
-
-        if (m_currentTarget->getVie() <= 0)
-            return false;
-
-        return true;
-    }
-
-    bool isClipEmpty() const
-    {
-        return m_ammo <= 0;
-    }
-
-    void reloadGun()
-    {
-        m_ammo = NPC_MAX_AMMO();
-    }
-
-private:
-    IGameObject* m_currentTarget;
-    Game& m_game;
-    int m_ammo;
-};
 
 
 namespace BT
@@ -345,7 +299,7 @@ namespace BT
     class IsGunEmpty : public ActionNode
     {
     public:
-        IsGunEmpty(CompositeNode* parent, boss* npc) : ActionNode(parent), m_npc(npc)
+        IsGunEmpty(CompositeNode* parent, Boss* npc) : ActionNode(parent), m_npc(npc)
         {
         }
 
@@ -360,13 +314,13 @@ namespace BT
         }
 
     private:
-        boss* m_npc;
+        Boss* m_npc;
     };
 
     class ReloadGun : public ActionNode
     {
     public:
-        ReloadGun(CompositeNode* parent, boss* npc) : ActionNode(parent), m_npc(npc)
+        ReloadGun(CompositeNode* parent, Boss* npc) : ActionNode(parent), m_npc(npc)
         {
         }
 
@@ -383,13 +337,13 @@ namespace BT
 
     private:
         int m_delay = 2;
-        boss* m_npc;
+        Boss* m_npc;
     };
 
     class Fire : public ActionNode
     {
     public:
-        Fire(CompositeNode* parent, boss* npc) : ActionNode(parent), m_npc(npc)
+        Fire(CompositeNode* parent, Boss* npc) : ActionNode(parent), m_npc(npc)
         {
         }
 
@@ -404,13 +358,13 @@ namespace BT
         }
 
     private:
-        boss* m_npc;
+        Boss* m_npc;
     };
 
     class IsEnemyDead : public ActionNode
     {
     public:
-        IsEnemyDead(CompositeNode* parent, boss* npc) : ActionNode(parent), m_npc(npc)
+        IsEnemyDead(CompositeNode* parent, Boss* npc) : ActionNode(parent), m_npc(npc)
         {
         }
 
@@ -426,13 +380,13 @@ namespace BT
         }
 
     private:
-        boss* m_npc;
+        Boss* m_npc;
     };
 
     class FindEnemy : public ActionNode
     {
     public:
-        FindEnemy(CompositeNode* parent, boss* npc) : ActionNode(parent), m_npc(npc)
+        FindEnemy(CompositeNode* parent, Boss* npc) : ActionNode(parent), m_npc(npc)
         {
         }
 
@@ -450,7 +404,7 @@ namespace BT
         }
 
     private:
-        boss* m_npc;
+        Boss* m_npc;
     };
 
     class VictoryDance : public ActionNode
